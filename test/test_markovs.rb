@@ -16,10 +16,10 @@ class MarkovGenerator
 
   def generate_string_for(seed_word)
     next_word = choose_word_to_follow(seed_word)
-    if next_word
-      "#{seed_word} #{choose_word_to_follow(seed_word)}"
+    if next_word.nil?
+      seed_word
     else
-      ""
+      "#{seed_word} #{generate_string_for(next_word)}"
     end
   end
 
@@ -45,12 +45,12 @@ class TestMarkovs < MiniTest::Spec
         @generator.generate_string_for('fuck').must_equal 'fuck you'
       end
 
-      it "should output '' when given input 'you'" do
-        @generator.generate_string_for('you').must_equal ''
+      it "should output empty string when given input 'you'" do
+        @generator.generate_string_for('you').must_equal 'you'
       end
 
-      it "should output '' when given input 'ohai'" do
-        @generator.generate_string_for('ohai').must_equal ''
+      it "should output empty string when given input 'ohai'" do
+        @generator.generate_string_for('ohai').must_equal 'ohai'
       end
     end
 
@@ -63,13 +63,32 @@ class TestMarkovs < MiniTest::Spec
         @generator.generate_string_for('can').must_equal 'can haz'
       end
 
-      it "should output '' when given input 'haz'" do
-        @generator.generate_string_for('haz').must_equal ''
+      it "should output empty string when given input 'haz'" do
+        @generator.generate_string_for('haz').must_equal 'haz'
       end
 
-      it "should output '' when given input 'ohai'" do
-        @generator.generate_string_for('ohai').must_equal ''
+      it "should output empty string when given input 'ohai'" do
+        @generator.generate_string_for('ohai').must_equal 'ohai'
       end
+    end
+  end
+
+  describe "Markov generator trained with 'can haz cheeseburger'" do
+    before do
+      @generator = MarkovGenerator.new
+      @generator.train_with('can haz cheeseburger')
+    end
+
+    it "should output 'can haz cheeseburger' when given 'can'" do
+      @generator.generate_string_for('can').must_equal 'can haz cheeseburger'
+    end
+
+    it "should output 'haz cheeseburger' when given 'haz'" do
+      @generator.generate_string_for('haz').must_equal 'haz cheeseburger'
+    end
+
+    it "should output empty string when given 'cheeseburger'" do
+      @generator.generate_string_for('cheeseburger').must_equal 'cheeseburger'
     end
   end
 
