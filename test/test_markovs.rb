@@ -7,10 +7,8 @@ class MarkovGenerator
 
   def train_with(source_data)
     tokens = source_data.split
-    tokens.each_with_index do |word, index|
-      if index < tokens.length
-        @knowledge[word] = tokens[index+1]
-      end
+    tokens.each_cons(2) do |word, following_word|
+      @knowledge[word] = following_word
     end
   end
 
